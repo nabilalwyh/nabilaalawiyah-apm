@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Digital Branch Opening Management System</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#f2f5f3;--card:#fff;--ink:#14231f;--mute:#5b6b66;--line:#d9e1dd;--pri:#0f5c4d;--pri-ink:#fff;--ok:#1b7a3d;--okbg:#e2f3e7;--warn:#8a5a00;--warnbg:#fdf0cf;--bad:#a8261c;--badbg:#fbe3e0;--info:#1f4e8c;--infobg:#e3edfa;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1714;--card:#16221e;--ink:#e6efeb;--mute:#93a59e;--line:#2a3a35;--pri:#3fb89f;--pri-ink:#06201a;--ok:#6fd392;--okbg:#17352385;--warn:#f0c15a;--warnbg:#3a2e0d;--bad:#ff8f84;--badbg:#401c18;--info:#8db8f2;--infobg:#172c47}}
+:root[data-theme="dark"]{--bg:#0e1714;--card:#16221e;--ink:#e6efeb;--mute:#93a59e;--line:#2a3a35;--pri:#3fb89f;--pri-ink:#06201a;--ok:#6fd392;--okbg:#17352385;--warn:#f0c15a;--warnbg:#3a2e0d;--bad:#ff8f84;--badbg:#401c18;--info:#8db8f2;--infobg:#172c47}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+header{background:var(--pri);color:var(--pri-ink);padding:12px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+header h1{font-size:17px;margin:0;font-weight:700;flex:1;min-width:200px}
+header select,header button{font:inherit;padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:var(--pri-ink)}
+header option{color:#14231f}
+nav{display:flex;gap:4px;padding:0 20px;background:var(--card);border-bottom:1px solid var(--line);overflow-x:auto}
+nav button{font:inherit;font-weight:500;background:none;border:0;border-bottom:3px solid transparent;padding:12px 14px;color:var(--mute);cursor:pointer;white-space:nowrap}
+nav button.on{color:var(--ink);border-color:var(--pri);font-weight:600}
+main{max-width:1040px;margin:0 auto;padding:20px}
+h2{font-size:20px;margin:0 0 4px}h3{font-size:15px;margin:0 0 10px}
+.sub{color:var(--mute);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+input[type=text],input[type=number],input[type=date],select,textarea{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+input:disabled,select:disabled{opacity:.6}
+button.b{font:inherit;font-weight:600;padding:8px 14px;border-radius:6px;border:1px solid var(--pri);background:var(--pri);color:var(--pri-ink);cursor:pointer}
+button.b.g{background:none;color:var(--pri)}button.b.d{background:var(--bad);border-color:var(--bad);color:#fff}
+button.b:disabled{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:13px;color:var(--mute);font-weight:600}
+tr.click{cursor:pointer}tr.click:hover td{background:var(--bg)}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.Complete,.Approved{background:var(--okbg);color:var(--ok)}
+.Missing,.Rejected{background:var(--badbg);color:var(--bad)}
+.Revision,.Resubmitted{background:var(--warnbg);color:var(--warn)}
+.NA,.Draft{background:var(--bg);color:var(--mute);border:1px solid var(--line)}
+.Submitted,.HO,.Sim{background:var(--infobg);color:var(--info)}
+.bar{height:12px;border-radius:99px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pri)}
+.big{font-size:40px;font-weight:700;line-height:1}
+.two{display:grid;grid-template-columns:1fr 2fr;gap:16px}
+@media(max-width:760px){.two{grid-template-columns:1fr}}
+.steps{display:flex;gap:0;margin:14px 0;flex-wrap:wrap}
+.step{flex:1;min-width:130px;padding:10px;border-top:4px solid var(--line);font-size:13px;color:var(--mute)}
+.step.done{border-color:var(--ok);color:var(--ink)}.step.cur{border-color:var(--pri);color:var(--ink);font-weight:700}.step.bad{border-color:var(--bad);color:var(--bad)}
+.note{padding:10px 12px;border-radius:8px;background:var(--warnbg);color:var(--warn);margin-bottom:12px;font-size:14px}
+.note.i{background:var(--infobg);color:var(--info)}.note.e{background:var(--badbg);color:var(--bad)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px}
+.metrics div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.metrics b{display:block;font-size:26px;line-height:1.1}.metrics span{font-size:12.5px;color:var(--mute)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.hist{list-style:none;margin:0;padding:0}.hist li{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}.hist small{color:var(--mute)}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;display:none;max-width:90%;z-index:9}
+.tip{display:flex;gap:10px;align-items:flex-start;background:var(--infobg);color:var(--info);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:14px}
+.tip div{flex:1}.tip b{display:block;margin-bottom:2px}.tip button{background:none;border:0;color:inherit;font:inherit;font-size:20px;line-height:1;cursor:pointer;padding:0 4px}
+#tour{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+#tour .box{background:var(--card);color:var(--ink);border-radius:12px;max-width:440px;width:100%;padding:22px}
+#tour h3{font-size:18px;margin:0 0 8px}#tour p{margin:0 0 16px}
+.dots{display:flex;gap:6px;margin-bottom:14px}.dots i{width:22px;height:4px;border-radius:9px;background:var(--line)}.dots i.on{background:var(--pri)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Branch Opening Management</h1>
+  <label for="role" style="margin:0;font-weight:500">Signed in as</label>
+  <select id="role" onchange="setRole(this.value)">
+    <option value="app">Calon Cabang (Rina)</option>
+    <option value="rev">HO Reviewer (Dimas)</option>
+    <option value="apr">HO Approver (Sari)</option>
+  </select>
+  <button onclick="tour(0)">? Panduan</button>
+  <button onclick="resetAll()">Reset demo data</button>
+</header>
+<nav id="nav"></nav>
+<main id="main"></main>
+<div id="tour" role="dialog" aria-modal="true" aria-labelledby="tt"></div>
+<div id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const now=()=>new Date().toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short'});
+const rp=n=>'Rp '+Number(n||0).toLocaleString('id-ID');
+const WHO={app:'Calon Cabang (Rina)',rev:'HO Reviewer (Dimas)',apr:'HO Approver (Sari)'};
+const KEY='bomsMvp1';
+let confirmed=false,tmpErr=[];
+
+function reqs(sim){
+  const r=[{id:'prop',n:'Proposal Pembukaan Cabang'},{id:'legal',n:'Dokumen Legalitas'},{id:'loc',n:'Dokumen Lokasi'},{id:'budget',n:'Rencana Anggaran'},{id:'layout',n:'Layout Cabang'}];
+  r.push(sim.own==='Sewa'?{id:'lease',n:'Perjanjian Sewa Lokasi'}:{id:'cert',n:'Sertifikat Kepemilikan'});
+  if(sim.type==='Mall')r.push({id:'mall',n:'Surat Persetujuan Pengelola Mall'});
+  if(sim.type==='Standalone')r.push({id:'pbg',n:'Persetujuan Bangunan Gedung (PBG)'});
+  r.push({id:'env',n:'Izin Lingkungan',na:+sim.size<=300});
+  r.push({id:'photo',n:'Foto Lokasi',opt:true});
+  return r;
+}
+const full=sim=>Object.fromEntries(reqs(sim).map(r=>[r.id,{file:r.id+'.pdf'}]));
+function seed(){
+  const mk=(id,name,loc,type,size,own,inv,status,extra={})=>{const sim={name,loc,type,size,own,date:'2027-03-01',invest:inv};return Object.assign({id,mine:false,applicant:'Area Mgr',sim,docs:full(sim),status,pic:'HO Reviewer',updated:'28 Sep 2026, 09:10',comment:'',assessed:false},extra)};
+  return{role:'app',tab:'sim',sim:{name:'',loc:'',type:'Ruko',size:120,own:'Sewa',date:'',invest:''},docs:{},subId:null,sel:null,fs:'',ft:'',fq:'',
+    subs:[mk('BR-2026-00121','Bekasi Harapan Indah','Bekasi','Ruko',110,'Sewa',850000000,'Approved',{pic:'—',comment:'Strong location fit.'}),
+      mk('BR-2026-00122','Kelapa Gading Square','Jakarta Utara','Mall',240,'Sewa',2100000000,'HO Review',{assessed:true,pic:'HO Approver'}),
+      mk('BR-2026-00123','Dago Corner','Bandung','Standalone',380,'Milik',3200000000,'Revision Required',{pic:'Area Mgr',comment:'Layout Cabang does not match required format.'}),
+      mk('BR-2026-00124','Tegal Plaza','Tegal','Mall',180,'Sewa',1500000000,'Rejected',{pic:'—',comment:'Rental cost exceeds investment ceiling.'}),
+      mk('BR-2026-00125','Depok Margonda','Depok','Ruko',130,'Sewa',900000000,'Submitted')],
+    audit:[],notifs:[]};
+}
+let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.subs)S=seed();
+S.seen=S.seen||{};S.hid=S.hid||{};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const mySub=()=>S.subs.find(s=>s.mine);
+const D=s=>s.mine?S.docs:s.docs;
+const SM=s=>s.mine?S.sim:s.sim;
+
+function toast(m,bad){const t=$('#toast');t.textContent=m;t.style.display='block';t.style.background=bad?'var(--bad)':'var(--ink)';t.style.color=bad?'#fff':'var(--bg)';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3200)}
+function log(s,action,from,to,comment){S.audit.unshift({t:now(),user:WHO[S.role],sid:s.id,action,from,to,comment:comment||''})}
+function notify(title,body){S.notifs.unshift({t:now(),title,body})}
+function cls(st){return st==='Revision Required'?'Revision':st==='HO Review'?'HO':st==='Simulation Completed'?'Sim':st==='Not Applicable'?'NA':st}
+const pill=st=>`<span class="pill ${cls(st)}">${esc(st)}</span>`;
+
+function reqStatus(r,docs){if(r.na)return'Not Applicable';const d=docs[r.id];if(!d)return'Missing';return d.rev?'Revision Required':'Complete'}
+function readiness(sim,docs){
+  const m=reqs(sim).filter(r=>!r.na&&!r.opt);
+  const left=m.filter(r=>reqStatus(r,docs)!=='Complete');
+  return{total:m.length,done:m.length-left.length,left,pct:Math.round((m.length-left.length)/m.length*100)};
+}
+const simOK=s=>s.name&&s.loc&&s.date&&+s.invest>0;
+const stage=()=>{const s=mySub();return s?s.status:simOK(S.sim)?'Simulation Completed':'Draft'};
+
+function setRole(r){S.role=r;S.tab=r==='app'?'sim':'dash';S.sel=null;save();render()}
+function setTab(t){S.tab=t;render()}
+function resetAll(){S=seed();confirmed=false;save();$('#role').value='app';render();toast('Demo data reset.')}
+function setSim(k,v){S.sim[k]=k==='size'?+v:v;save();render()}
+function upload(id,inp){
+  const f=inp.files[0];if(!f)return;
+  if(!/\.(pdf|jpe?g|png)$/i.test(f.name)||f.size>5*1048576){toast('Upload a PDF, JPG or PNG file up to 5 MB.',true);inp.value='';return}
+  S.docs[id]={file:f.name,date:now()};save();render();toast('Uploaded '+f.name);
+}
+
+/* ---------- Applicant views ---------- */
+function locked(){const s=mySub();return !!s&&s.status!=='Revision Required'}
+function viewSim(){
+  const L=locked(),sim=S.sim,rd=readiness(sim,S.docs),f=(k,l,t='text',x='')=>`<div><label for="f${k}">${l}</label><input id="f${k}" type="${t}" ${x} value="${esc(sim[k])}" ${L?'disabled':''} onchange="setSim('${k}',this.value)"></div>`;
+  const rows=reqs(sim).map(r=>{const st=reqStatus(r,S.docs),d=S.docs[r.id];
+    const act=r.na?'—':L&&st!=='Revision Required'?(d?'Submitted':'—'):`<label class="b g" style="display:inline-block;margin:0;cursor:pointer;padding:5px 10px;border:1px solid var(--pri);border-radius:6px;color:var(--pri)">${d?'Replace':'Upload'}<input type="file" hidden accept=".pdf,.jpg,.jpeg,.png" onchange="upload('${r.id}',this)"></label>`;
+    return`<tr><td>${esc(r.n)}<br><small style="color:var(--mute)">${r.opt?'Optional':'Mandatory'}${d?' · '+esc(d.file):''}${d&&d.rev?' · '+esc(d.comment||'Needs revision'):''}</small></td><td>${pill(st)}</td><td>${act}</td></tr>`}).join('');
+  return`<h2>Simulation & requirement checklist</h2><p class="sub">Not an official submission. Your answers save automatically and carry over when you submit.</p>
+  ${L?'<div class="note i">This proposal is already submitted, so the form is locked until a reviewer requests a revision.</div>':''}
+  <div class="card"><h3>Branch information</h3><div class="grid">${f('name','Branch name')}${f('loc','Location (city / area)')}
+  <div><label for="ftype">Branch type</label><select id="ftype" ${L?'disabled':''} onchange="setSim('type',this.value)">${['Ruko','Mall','Standalone'].map(o=>`<option ${sim.type===o?'selected':''}>${o}</option>`).join('')}</select></div>
+  ${f('size','Floor area (m²)','number','min="10"')}
+  <div><label for="fown">Ownership</label><select id="fown" ${L?'disabled':''} onchange="setSim('own',this.value)">${['Sewa','Milik'].map(o=>`<option ${sim.own===o?'selected':''}>${o}</option>`).join('')}</select></div>
+  ${f('date','Target opening date','date')}${f('invest','Investment estimate (Rp)','number','min="0"')}</div></div>
+  <div class="two"><div class="card"><h3>Branch readiness</h3><div class="big">${rd.pct}%</div><p class="sub" style="margin:6px 0">${rd.done} / ${rd.total} mandatory requirements complete</p><div class="bar"><i style="width:${rd.pct}%"></i></div>
+  ${rd.left.length?`<h3 style="margin-top:14px">Still needed</h3><ol style="margin:0;padding-left:18px">${rd.left.map(r=>`<li>${esc(r.n)}</li>`).join('')}</ol>`:'<p style="color:var(--ok);font-weight:600">All mandatory requirements are complete.</p>'}</div>
+  <div class="card"><h3>Requirements for a ${esc(sim.type)} · ${esc(sim.own)} · ${sim.size} m²</h3><div class="tw"><table><tr><th>Requirement</th><th>Status</th><th></th></tr>${rows}</table></div></div></div>`;
+}
+function viewSubmit(){
+  const s=mySub(),sim=S.sim,rd=readiness(sim,S.docs);
+  if(s&&s.status!=='Revision Required')return`<h2>Submit proposal</h2><div class="card"><p>Proposal <b>${s.id}</b> is ${pill(s.status)}. Follow its progress under Tracking.</p><button class="b" onclick="setTab('track')">Open tracking</button></div>`;
+  const flagged=Object.values(S.docs).some(d=>d.rev),resub=!!s;
+  const blockers=[];if(!simOK(sim))blockers.push('Complete the branch information (name, location, opening date, investment).');
+  if(rd.left.length)blockers.push('Complete all mandatory requirements: '+rd.left.map(r=>r.n).join(', ')+'.');
+  if(flagged)blockers.push('Replace the documents flagged for revision.');
+  return`<h2>${resub?'Resubmit proposal':'Submit proposal'}</h2><p class="sub">Review the summary, confirm, then submit.</p>
+  ${resub?`<div class="note">Revision requested: ${esc(s.comment)}</div>`:''}
+  ${blockers.length?`<div class="note e"><b>Not ready to submit yet</b><ul style="margin:6px 0 0;padding-left:18px">${blockers.map(b=>`<li>${esc(b)}</li>`).join('')}</ul></div>`:''}
+  <div class="card"><h3>Summary</h3><table>${[['Branch',sim.name],['Location',sim.loc],['Type',sim.type],['Floor area',sim.size+' m²'],['Ownership',sim.own],['Target opening',sim.date],['Investment',rp(sim.invest)],['Readiness',rd.pct+'% ('+rd.done+'/'+rd.total+')']].map(([a,b])=>`<tr><th style="width:170px">${a}</th><td>${esc(b)}</td></tr>`).join('')}</table>
+  <p style="margin-top:14px"><label style="font-weight:500;display:flex;gap:8px;align-items:flex-start"><input type="checkbox" ${confirmed?'checked':''} onchange="confirmed=this.checked;render()" style="margin-top:4px"><span>Saya menyatakan bahwa seluruh data dan dokumen yang diberikan adalah benar dan dapat dipertanggungjawabkan.</span></label></p>
+  <button class="b" ${blockers.length||!confirmed?'disabled':''} onclick="doSubmit()">${resub?'Resubmit proposal':'Submit proposal'}</button></div>`;
+}
+function doSubmit(){
+  let s=mySub();
+  if(s){const f=s.status;s.status='Resubmitted';s.pic='HO Reviewer';s.updated=now();s.comment='';s.assessed=false;s.sim=null;log(s,'Resubmitted',f,'Resubmitted','Revision completed');notify('Proposal resubmitted',s.id+' was sent back to Head Office.')}
+  else{const id='BR-2026-'+String(126+S.subs.length-5).padStart(5,'0');s={id,mine:true,applicant:'Rina',status:'Submitted',pic:'HO Reviewer',updated:now(),comment:'',assessed:false};S.subs.unshift(s);log(s,'Submitted','Simulation Completed','Submitted','Applicant confirmed data accuracy');notify('Proposal submitted','Your proposal '+id+' was submitted successfully.')}
+  confirmed=false;S.tab='track';save();render();toast('Submission ID '+s.id);
+}
+function viewTrack(){
+  const s=mySub();
+  if(!s)return`<h2>Tracking</h2><div class="card"><p><b>No proposal yet.</b> Current stage: ${pill(stage())}. Finish the simulation and submit to start tracking.</p><button class="b" onclick="setTab('sim')">Go to simulation</button></div>`;
+  const st=s.status,idx=st==='Approved'?5:st==='HO Review'?(s.assessed?3:2):1;
+  const names=['Proposal Submitted','Administrative Validation','Head Office Review','Final Approval','Branch Approved'];
+  const steps=names.map((n,i)=>{let c=i<idx?'done':i===idx?'cur':'';if(st==='Rejected'&&i===idx)c='bad';if(st==='Revision Required'&&i===1)c='cur';return`<div class="step ${c}">${i<idx?'✓ ':''}${n}</div>`}).join('');
+  const need=st==='Revision Required'?'Replace flagged documents and resubmit.':'None';
+  const h=S.audit.filter(a=>a.sid===s.id).map(a=>`<li><b>${esc(a.action)}</b> · ${esc(a.user)}<br><small>${a.t} · ${esc(a.from)} → ${esc(a.to)}${a.comment?' · “'+esc(a.comment)+'”':''}</small></li>`).join('');
+  return`<h2>${s.id}</h2><p class="sub">${pill(st)} &nbsp; ${esc(S.sim.name)}</p>
+  ${st==='Revision Required'?`<div class="note"><b>Action required:</b> ${esc(s.comment)} <button class="b" style="margin-left:8px" onclick="setTab('sim')">Fix documents</button></div>`:''}
+  <div class="card"><div class="steps">${steps}</div><div class="grid"><div><label>Current PIC</label>${esc(s.pic)}</div><div><label>Last update</label>${s.updated}</div><div><label>Required action</label>${need}</div><div><label>Latest comment</label>${esc(s.comment||'—')}</div></div></div>
+  <div class="two"><div class="card"><h3>Notifications</h3><ul class="hist">${S.notifs.map(n=>`<li><b>${esc(n.title)}</b><br>${esc(n.body)}<br><small>${n.t}</small></li>`).join('')||'<li>No notifications yet.</li>'}</ul></div>
+  <div class="card"><h3>Submission history</h3><ul class="hist">${h||'<li>No history yet.</li>'}</ul></div></div>`;
+}
+
+/* ---------- Head Office views ---------- */
+const UR=['Submitted','Resubmitted','HO Review'];
+function viewDash(){
+  const c=k=>S.subs.filter(s=>k(s.status)).length,subs=S.subs.filter(s=>(!S.fs||s.status===S.fs)&&(!S.ft||SM(s).type===S.ft)&&(!S.fq||(SM(s).name+SM(s).loc).toLowerCase().includes(S.fq.toLowerCase())));
+  const M=[['Total',S.subs.length],['Submitted',c(x=>x==='Submitted'||x==='Resubmitted')],['Under review',c(x=>x==='HO Review')],['Revision required',c(x=>x==='Revision Required')],['Approved',c(x=>x==='Approved')],['Rejected',c(x=>x==='Rejected')]];
+  const rows=subs.map(s=>`<tr class="click" tabindex="0" onclick="selSub('${s.id}')" onkeydown="if(event.key==='Enter')selSub('${s.id}')"><td>${s.id}</td><td>${esc(SM(s).name)}</td><td>${esc(SM(s).loc)}</td><td>${esc(SM(s).type)}</td><td>${pill(s.status)}</td><td>${esc(s.pic)}</td><td>${s.updated}</td></tr>`).join('');
+  return`<h2>Branch opening dashboard</h2><p class="sub">${S.role==='rev'?'Validate and assess proposals.':'Give the final decision on assessed proposals.'}</p>
+  <div class="metrics">${M.map(([l,v])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div>
+  <div class="card"><div class="row" style="margin-bottom:10px"><input type="text" placeholder="Search name or location" value="${esc(S.fq)}" onchange="S.fq=this.value;render()" style="max-width:220px" aria-label="Search">
+  <select aria-label="Status filter" style="max-width:190px" onchange="S.fs=this.value;render()"><option value="">All statuses</option>${['Submitted','Resubmitted','HO Review','Revision Required','Approved','Rejected'].map(o=>`<option ${S.fs===o?'selected':''}>${o}</option>`).join('')}</select>
+  <select aria-label="Type filter" style="max-width:160px" onchange="S.ft=this.value;render()"><option value="">All types</option>${['Ruko','Mall','Standalone'].map(o=>`<option ${S.ft===o?'selected':''}>${o}</option>`).join('')}</select></div>
+  <div class="tw"><table><tr><th>ID</th><th>Branch</th><th>Location</th><th>Type</th><th>Status</th><th>PIC</th><th>Updated</th></tr>${rows||'<tr><td colspan="7">No submissions match these filters.</td></tr>'}</table></div></div>${S.sel?detail():''}`;
+}
+function selSub(id){S.sel=id;render();setTimeout(()=>{const e=$('#detail');e&&e.scrollIntoView({behavior:'smooth'})},30)}
+function detail(){
+  const s=S.subs.find(x=>x.id===S.sel);if(!s)return'';
+  const sim=SM(s),docs=D(s),rd=readiness(sim,docs);
+  const dr=reqs(sim).filter(r=>!r.na).map(r=>`<tr><td>${esc(r.n)}${r.opt?' <small>(optional)</small>':''}</td><td>${docs[r.id]?esc(docs[r.id].file):'—'}</td><td>${pill(reqStatus(r,docs))}</td></tr>`).join('');
+  const triage=S.role==='rev'&&(s.status==='Submitted'||s.status==='Resubmitted'),assess=S.role==='rev'&&s.status==='HO Review'&&!s.assessed,decide=S.role==='apr'&&s.status==='HO Review'&&s.assessed;
+  const can=triage||assess||decide;
+  const btns=triage?`<button class="b" onclick="act('acc')">Accept for review</button><button class="b g" onclick="act('rev')">Request revision</button><button class="b d" onclick="act('rej')">Reject</button>`
+   :assess?`<button class="b" onclick="act('asm')">Complete assessment</button><button class="b g" onclick="act('rev')">Request revision</button><button class="b d" onclick="act('rej')">Reject</button>`
+   :decide?`<button class="b" onclick="act('apv')">Approve</button><button class="b g" onclick="act('rev')">Request revision</button><button class="b d" onclick="act('rej')">Reject</button>`:'';
+  const msg=!can?(S.role==='apr'&&s.status==='HO Review'?'Waiting for the HO Reviewer to complete the assessment before you can decide.':UR.includes(s.status)?'Only the '+(s.status==='HO Review'&&s.assessed?'HO Approver':'HO Reviewer')+' can act at this stage.':'This submission is closed ('+s.status+').'):'';
+  const h=S.audit.filter(a=>a.sid===s.id).map(a=>`<li><b>${esc(a.action)}</b> · ${esc(a.user)}<br><small>${a.t} · ${esc(a.from)} → ${esc(a.to)}${a.comment?' · “'+esc(a.comment)+'”':''}</small></li>`).join('');
+  return`<div class="card" id="detail"><h3>${s.id} · ${esc(sim.name)} ${pill(s.status)}</h3>
+  <div class="grid" style="margin-bottom:12px"><div><label>Location</label>${esc(sim.loc)} · ${esc(sim.type)} · ${sim.size} m² · ${esc(sim.own)}</div><div><label>Target opening</label>${esc(sim.date)}</div><div><label>Investment</label>${rp(sim.invest)}</div><div><label>Readiness</label>${rd.pct}% (${rd.done}/${rd.total})</div></div>
+  ${s.comment?`<div class="note i">Latest comment: ${esc(s.comment)}</div>`:''}
+  <div class="tw"><table><tr><th>Document</th><th>File</th><th>Verification</th></tr>${dr}</table></div>
+  ${can?`<div style="margin-top:14px" class="grid"><div><label for="note">Notes / reason (required for revision and rejection)</label><textarea id="note" rows="3"></textarea></div><div><label for="flag">Flag a document for revision (optional)</label><select id="flag"><option value="">None</option>${reqs(sim).filter(r=>!r.na&&docs[r.id]).map(r=>`<option value="${r.id}">${esc(r.n)}</option>`).join('')}</select></div></div><div class="row" style="margin-top:12px">${btns}</div>`:`<p class="sub" style="margin-top:12px">${msg}</p>`}
+  ${h?`<h3 style="margin-top:16px">Approval history</h3><ul class="hist">${h}</ul>`:''}</div>`;
+}
+function act(k){
+  const s=S.subs.find(x=>x.id===S.sel);if(!s)return;
+  const note=($('#note')?.value||'').trim(),flag=$('#flag')?.value,from=s.status;
+  if((k==='rev'||k==='rej')&&!note){toast('Add a reason first. It is required for revisions and rejections.',true);return}
+  let name,msg;
+  if(k==='acc'){s.status='HO Review';s.pic='HO Reviewer';name='Accepted for review';msg='Your proposal passed administrative validation and is now in Head Office review.'}
+  if(k==='asm'){s.assessed=true;s.pic='HO Approver';name='Assessment completed';msg='Review completed. Your proposal is waiting for final approval.'}
+  if(k==='rev'){s.status='Revision Required';s.assessed=false;s.pic=s.mine?'Rina':s.applicant;name='Revision requested';msg='Action required: '+note;if(flag)D(s)[flag]=Object.assign({},D(s)[flag],{rev:true,comment:note})}
+  if(k==='rej'){s.status='Rejected';s.pic='—';name='Rejected';msg='Your proposal was rejected: '+note}
+  if(k==='apv'){s.status='Approved';s.pic='—';name='Approved';msg='Your branch opening proposal was approved.'}
+  s.comment=note;s.updated=now();log(s,name,from,s.status,note);
+  if(s.mine)notify(name+' — '+s.id,msg);
+  save();render();toast(name+': '+s.id);
+}
+function viewAudit(){
+  const rows=S.audit.map(a=>`<tr><td>${a.t}</td><td>${esc(a.user)}</td><td>${a.sid}</td><td>${esc(a.action)}</td><td>${esc(a.from)} → ${esc(a.to)}</td><td>${esc(a.comment)}</td></tr>`).join('');
+  return`<h2>Audit trail</h2><p class="sub">Every status change with user, time, before/after status and reason.</p><div class="card tw"><table><tr><th>Time</th><th>User</th><th>Submission</th><th>Action</th><th>Status</th><th>Comment</th></tr>${rows||'<tr><td colspan="6">No actions recorded yet. Submit or review a proposal to see entries.</td></tr>'}</table></div>`;
+}
+
+const TOURS={
+app:[['Selamat datang 👋','Aplikasi ini membantu Anda mengajukan pembukaan cabang ke Head Office, dari cek kesiapan sampai persetujuan. Tutorial ini hanya 4 langkah.'],
+['1. Isi simulasi','Di tab "Simulation & checklist", isi data calon cabang. Daftar dokumen yang dibutuhkan menyesuaikan jenis cabang, status lokasi, dan luas. Simulasi belum dianggap pengajuan resmi dan tersimpan otomatis.'],
+['2. Lengkapi dokumen','Klik Upload di setiap requirement berstatus Missing (PDF/JPG/PNG, maks 5 MB). Skor Readiness naik seiring dokumen wajib terpenuhi. Dokumen Optional tidak mengurangi skor.'],
+['3. Kirim proposal','Setelah readiness 100%, buka tab "Submit proposal", cek ringkasan, centang pernyataan, lalu kirim. Anda akan mendapat Submission ID.'],
+['4. Pantau status','Tab "Tracking" menampilkan progres, PIC, notifikasi, dan riwayat. Jika diminta revisi, perbaiki dokumen yang ditandai lalu kirim ulang.']],
+rev:[['Halo, HO Reviewer 👋','Tugas Anda: memvalidasi kelengkapan pengajuan lalu menilai proposalnya.'],
+['1. Pilih pengajuan','Di Dashboard, klik salah satu baris (gunakan filter bila perlu). Detail dokumen dan riwayat muncul di bawah tabel.'],
+['2. Validasi administrasi','Untuk status Submitted/Resubmitted pilih Accept for review, Request revision, atau Reject. Revisi dan penolakan wajib disertai alasan. Anda bisa menandai dokumen yang perlu diperbaiki.'],
+['3. Selesaikan penilaian','Pada status HO Review klik Complete assessment agar pengajuan diteruskan ke Approver. Semua aksi tercatat di Audit trail.']],
+apr:[['Halo, HO Approver 👋','Anda memberi keputusan akhir untuk pengajuan yang sudah dinilai Reviewer.'],
+['1. Cari yang siap diputuskan','Di Dashboard, filter status HO Review. Hanya pengajuan yang assessment-nya selesai yang bisa Anda putuskan.'],
+['2. Putuskan','Pilih Approve, Request revision, atau Reject. Alasan wajib untuk revisi dan penolakan; catatan persetujuan opsional.'],
+['3. Lihat jejak','Seluruh keputusan tersimpan di Approval history dan tab Audit trail.']]};
+const TIPS={sim:['Mulai dari sini','Isi data cabang, lalu upload dokumen sampai readiness 100%. Ini baru simulasi, belum pengajuan resmi.'],
+submit:['Tinggal selangkah lagi','Tombol kirim aktif setelah data lengkap, semua dokumen wajib ada, dan pernyataan dicentang. Kendala ditampilkan dalam kotak merah.'],
+track:['Cara membaca halaman ini','Garis berwarna menunjukkan tahap saat ini. Bagian "Required action" memberi tahu apa yang perlu Anda lakukan.'],
+dash:['Cara memakai dashboard','Klik baris pengajuan untuk melihat dokumen dan mengambil tindakan. Gunakan filter di atas tabel untuk mempersempit daftar.'],
+audit:['Tentang audit trail','Setiap perubahan status dicatat: siapa, kapan, status sebelum dan sesudah, serta alasannya.']};
+let tourOn=false;
+function tour(i){
+  const T=TOURS[S.role],el=$('#tour');
+  if(i>=T.length){tourEnd();return}
+  tourOn=true;el.style.display='flex';
+  el.innerHTML=`<div class="box"><div class="dots">${T.map((_,j)=>`<i class="${j<=i?'on':''}"></i>`).join('')}</div><h3 id="tt">${T[i][0]}</h3><p>${T[i][1]}</p><div class="row" style="justify-content:space-between"><button class="b g" onclick="tourEnd()">Lewati</button><span class="row">${i?`<button class="b g" onclick="tour(${i-1})">Kembali</button>`:''}<button class="b" id="tn" onclick="tour(${i+1})">${i===T.length-1?'Mulai':'Lanjut'}</button></span></div></div>`;
+  $('#tn').focus();
+}
+function tourEnd(){$('#tour').style.display='none';tourOn=false;S.seen[S.role]=1;save()}
+function tipHtml(){const t=TIPS[S.tab];if(!t||S.hid[S.tab])return'';return`<div class="tip"><span aria-hidden="true">💡</span><div><b>${t[0]}</b>${t[1]}</div><button aria-label="Tutup tips" onclick="S.hid['${S.tab}']=1;save();render()">×</button></div>`}
+function render(){
+  const a=S.role==='app',tabs=a?[['sim','Simulation & checklist'],['submit','Submit proposal'],['track','Tracking']]:[['dash','Dashboard'],['audit','Audit trail']];
+  if(!tabs.some(t=>t[0]===S.tab))S.tab=tabs[0][0];
+  $('#role').value=S.role;
+  $('#nav').innerHTML=tabs.map(([k,l])=>`<button class="${S.tab===k?'on':''}" onclick="setTab('${k}')">${l}${k==='track'&&S.notifs.length?' ('+S.notifs.length+')':''}</button>`).join('');
+  $('#main').innerHTML=tipHtml()+({sim:viewSim,submit:viewSubmit,track:viewTrack,dash:viewDash,audit:viewAudit})[S.tab]();
+  save();
+  if(!S.seen[S.role]&&!tourOn)tour(0);
+}
+render();
+</script>
+</body>
+</html>
